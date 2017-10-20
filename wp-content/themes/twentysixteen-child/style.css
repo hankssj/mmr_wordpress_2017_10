@@ -1,0 +1,99 @@
+/*
+ Theme Name:   Twenty Sixteen Child
+ Description:  Child theme based on Twenty Sixteen
+ Author:       MMR
+ Template:     twentysixteen
+ Version:      1.0.0
+*/
+
+/* 4 column Gravity Forms custom ready class ------------------------------------------------------*/
+ 
+.gform_wrapper .top_label li.gfield.gf_first_quarter,
+.gform_wrapper .top_label li.gfield.gf_second_quarter,
+.gform_wrapper .top_label li.gfield.gf_third_quarter,
+.gform_wrapper .top_label li.gfield.gf_fourth_quarter {
+    margin:0 0 8px 0;
+    width:24%;
+}
+ 
+.gform_wrapper .top_label li.gfield.gfield_error.gf_first_quarter,
+.gform_wrapper .top_label li.gfield.gfield_error.gf_second_quarter,
+.gform_wrapper .top_label li.gfield.gfield_error.gf_third_quarter {
+    width:21%;
+}
+ 
+.gform_wrapper .top_label li.gfield.gfield_error.gf_third_quarter {
+    margin-right:1%;
+}
+ 
+.gform_wrapper .top_label li.gfield.gf_first_quarter {
+    float:left;
+    clear:left!important;
+}
+ 
+.gform_wrapper .top_label li.gfield.gf_second_quarter,
+.gform_wrapper .top_label li.gfield.gf_third_quarter,
+.gform_wrapper .top_label li.gfield.gf_fourth_quarter {
+    float:left;
+    margin-left:2%;
+    clear:none!important;
+}
+ 
+.gform_wrapper .top_label li.gfield.gfield_error.gf_second_quarter,
+.gform_wrapper .top_label li.gfield.gfield_error.gf_third_quarter {
+    margin-left:3%;
+}
+ 
+.gform_wrapper .top_label li.gfield.gf_first_quarter input.medium,
+.gform_wrapper .top_label li.gfield.gf_first_quarter input.large,
+.gform_wrapper .top_label li.gfield.gf_first_quarter select.medium,
+.gform_wrapper .top_label li.gfield.gf_first_quarter select.large,
+.gform_wrapper .top_label li.gfield.gf_second_quarter input.medium,
+.gform_wrapper .top_label li.gfield.gf_second_quarter input.large,
+.gform_wrapper .top_label li.gfield.gf_second_quarter select.medium,
+.gform_wrapper .top_label li.gfield.gf_second_quarter select.large,
+.gform_wrapper .top_label li.gfield.gf_third_quarter input.medium,
+.gform_wrapper .top_label li.gfield.gf_third_quarter input.large,
+.gform_wrapper .top_label li.gfield.gf_third_quarter select.medium,
+.gform_wrapper .top_label li.gfield.gf_third_quarter select.large,
+.gform_wrapper .top_label li.gfield.gf_fourth_quarter input.medium,
+.gform_wrapper .top_label li.gfield.gf_fourth_quarter input.large,
+.gform_wrapper .top_label li.gfield.gf_fourth_quarter select.medium,
+.gform_wrapper .top_label li.gfield.gf_fourth_quarter select.large {
+    width:95%;
+}
+ 
+.gform_wrapper .top_label li.gfield.gf_first_quarter+li.gsection,
+.gform_wrapper .top_label li.gfield.gf_third_quarter+li.gsection {
+    padding:16px 0 8px 0;
+}
+ 
+.gform_wrapper .top_label li.gfield.gf_first_quarter+li.gfield,
+.gform_wrapper .top_label li.gfield.gf_second_quarter+li.gfield,
+.gform_wrapper .top_label li.gfield.gf_third_quarter+li.gfield,
+.gform_wrapper .top_label li.gfield.gf_fourth_quarter+li.gfield {
+    clear:both;
+}
+ 
+.gform_wrapper .top_label li.gfield.gf_first_quarter+.gform_footer,
+.gform_wrapper .top_label li.gfield.gf_second_quarter+.gform_footer,
+.gform_wrapper .top_label li.gfield.gf_third_quarter+.gform_footer,
+.gform_wrapper .top_label li.gfield.gf_fourth_quarter+.gform_footer {
+    clear:both;
+}
+ 
+/* contribution by gogrw------------------------------------------------------*/
+@media only screen and (max-width: 550px), only screen and (max-device-width: 550px){
+    .gform_wrapper .top_label li.gfield.gf_first_quarter,
+    .gform_wrapper .top_label li.gfield.gf_second_quarter,
+    .gform_wrapper .top_label li.gfield.gf_third_quarter,
+    .gform_wrapper .top_label li.gfield.gf_fourth_quarter {
+    margin:0 0 0 0 !important;
+    width:100% !important;
+    min-width:100% !important;
+    max-width:100% !important;
+    }
+}
+
+/*    Remove footer from bottom of table view  (payments and charges) */
+.gv-table-view tfoot{ display:none; }
