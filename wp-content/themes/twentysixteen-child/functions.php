@@ -1,22 +1,15 @@
 <?php
 
+function enqueue_parent_styles() {wp_enqueue_style( 'parent-style', get_template_directory_uri().'/style.css' );}
+function electives_js() { wp_enqueue_script( 'electives_js', get_stylesheet_directory_uri() . '/js/electives.js', array( 'jquery' ), '1.0', true );}
+
 add_action( 'wp_enqueue_scripts', 'enqueue_parent_styles' );
-
-function enqueue_parent_styles() {
-    wp_enqueue_style( 'parent-style', get_template_directory_uri().'/style.css' );
-}
-
-function test_js() {
-    wp_enqueue_script( 'custom_js', get_stylesheet_directory_uri() . '/js/test.js', array( 'jquery' ), '1.0', true );
-}
-
-function electives_js() {
-     wp_enqueue_script( 'electives_js', get_stylesheet_directory_uri() . '/js/electives.js', array( 'jquery' ), '1.0', true );
-}
-
-add_action('wp_enqueue_scripts', 'test_js');
 add_action('wp_enqueue_scripts', 'electives_js');
 
+//function test_js() {
+//    wp_enqueue_script( 'custom_js', get_stylesheet_directory_uri() . '/js/test.js', array( 'jquery' ), '1.0', true );/
+//}
+//add_action('wp_enqueue_scripts', 'test_js');
 /*************************************************************************/
 /*  Gets rid of the offensive Howdy bar at the top of each page! */
 
@@ -41,7 +34,14 @@ function id_for($which) {
             "afternoon_ensemble_form" => 10,
             "afternoon_ensemble_edit_view" => 189,
             "elective_selection_form" => 12,
-            "elective_selection_edit_view" => 213);
+            "elective_selection_edit_view" => 213,
+            "vocal_evaluation_form" => 13,
+            "vocal_evaluation_edit_view" => 256,
+            "string_evaluation_form" => 14,
+            "string_evaluation_edit_view" => 258,
+            "wind_evaluation_form" => 15,
+            "wind_evaluation_edit_view" => 260
+            );
     return $ids[$which];
 }
 
@@ -51,10 +51,9 @@ function find_field($form, $field_id) {
 }
 
 /***************************************************/
-/*  Registration form helpers -- allow other forms need to get instrument
-    and total */
+/*  Registration form helpers -- allow other forms need to get instrument and total */
 
-function registration_form() { return entry("registration_form"); }
+function registration_form() { return entry("contact_form"); }
 
 function registration_form_field_id($field_name) {
     $ids = array(
@@ -64,17 +63,30 @@ function registration_form_field_id($field_name) {
     return $ids[$field_name];
 }
 
-function registration_form_value($field_name) {
-    return registration_form()[registration_form_field_id($field_name)];
-}
-
-//  Apparently total isn't really a field.  Go figure
-function registration_form_total() {
-    return registration_form()[registration_form_field_id("total")];
-}
+function registration_form_value($field_name) { return registration_form()[registration_form_field_id($field_name)];}
+// Get total by name, not by ID.  Why?
+function registration_form_total() { return registration_form()[registration_form_field_id("total")];}
 
 function primary_instrument() { return registration_form_value("instrument"); }
 add_shortcode('primary_instrument', 'primary_instrument');
+
+/***************************************************/
+/*  Contact form helpers -- allow other forms need to get name */
+
+function contact_form() { return entry("contact_form"); }
+
+function contact_form_field_id($field_name) {
+    $ids = array(
+        "first_name" => "1.3",
+        "last_name" => "1.6");
+    return $ids[$field_name];
+}
+
+function contact_form_value($field_name) { return contact_form()[contact_form_field_id($field_name)];}
+
+function user_name() {
+    return contact_form_value("first_name") . " " . contact_form_value("last_name");
+}
 
 /********************************/
 /* For example, get a link to the page for the "Contact Information Form" page */
@@ -86,12 +98,13 @@ function get_page_link_by_title($page_title) {
 
 /******************************/
 
+//  TODO: Add the test on created_by to the call to get entries
 function entries($form_name) {
     $form_id = id_for($form_name);
     $user_id = get_current_user_id();
     if ($user_id <= 0) return array();
     $entries = array();
-    foreach(GFAPI::get_entries($form_id) as $entry)
+    foreach(GFAPI::get_entries($form_id, array(), array(), array('offset' => 0, 'page_size' => 200)) as $entry)
         if ($entry["created_by"] == $user_id) $entries[] = $entry;
     return $entries;
 }
@@ -195,19 +208,16 @@ function balance() { return charge_total() - payment_total(); }
 add_shortcode('balance_string', 'balance_string');
 function balance_string() { setlocale(LC_MONETARY, en_US.UTF-8); return money_format('$%.2n', balance()); }
 
-function charge_total() {
-    if(has_registration()) return registration_form_total(); else return 0;
-}
+function charge_total() { return has_registration() ? registration_form_total() : 0; }
 
-function payment_total() {
-    return online_payment_total() + check_payment_total(); 
-}
+function payment_total() { return online_payment_total() + check_payment_total(); }
 
 function online_payment_total() {
     $total = 0;
     $user_id = get_current_user_id();
     $payment_amount_id = 9;
-    foreach(GFAPI::get_entries(id_for("online_payment_form")) as $entry)
+    foreach(GFAPI::get_entries(id_for("online_payment_form"), array(), array(), array( 'offset' => 0, 'page_size' => 30 )) 
+                as $entry)
         if ($entry["created_by"] == $user_id) {
             if ($entry["is_fulfilled"] == 1) {
                 $payment_amount = substr($entry[$payment_amount_id], 1);
@@ -217,12 +227,10 @@ function online_payment_total() {
     return $total;
 }
 
-// Field 1 is the email;  field 2 is the amount
-
 function check_payment_total() {
     $user_email = wp_get_current_user()->user_email;
     $total = 0;
-    foreach(GFAPI::get_entries(id_for("check_payment_form")) as $entry)
+    foreach(GFAPI::get_entries(id_for("check_payment_form"), array(), array(), array( 'offset' => 0, 'page_size' => 30 )) as $entry)
         if ($entry[1] == $user_email) 
              $total += $entry[2];
     return $total;
@@ -280,7 +288,9 @@ function instrument_form_field_id($field_name) {
     return $ids[$field_name];
 }
 
-function instruments() { return GFAPI::get_entries(id_for("instrument_form")); }
+function instruments() { 
+    return GFAPI::get_entries(id_for("instrument_form"), array(), array(), array('offset' => 0, 'page_size' => 200));
+}
 
 function find_instrument($instrument_name) {
     foreach(instruments() as $instrument)
@@ -308,7 +318,6 @@ function evaluation_selection_group($instrument_name) {
     return instrument_attribute($instrument_name, "evaluation_group");
 }
 
-
 /**********/
 /*  Enables invisible labels in Gravity Forms */
 
@@ -325,10 +334,7 @@ function my_login_redirect( $redirect_to, $request, $user ) {
 /*  Top menu customization for logged in / logged out */
 
 function my_wp_nav_menu_args( $args = '' ) {
-    if( is_user_logged_in() )
-        $args['menu'] = 'top_menu_logged_in';
-    else
-        $args['menu'] = 'top_menu_logged_out';
+    $args['menu'] = is_user_logged_in() ? 'top_menu_logged_in' :'top_menu_logged_out';
     return $args;
 }
 add_filter( 'wp_nav_menu_args', 'my_wp_nav_menu_args' );
@@ -363,7 +369,6 @@ $reg_form_id = id_for("registration_form");
 add_filter( "gform_validation_$reg_form_id", 'validate_participant_has_instrument' );
 
 function validate_participant_has_instrument( $validation_result ) {
-    print("Validation</br>");
      $form = $validation_result['form'];
      $participation_field = null;
      $instrument_field = null;
@@ -419,17 +424,91 @@ function populate_default_instrument($form, $field_ids ) {
 }
 
 /********************************************************************/
-/*   Self evaluation forms   */
-// Forms, string eval 14, wind eval 13, 15 
+/*   Evaluation forms   */
 
-function self_eval_url_for($instrument) {
+
+// Names of instruments for which eval required, whether or not complete
+function required_evaluations() {
+    $required = array();
+    if (has_registration()) $required[] = registration_form_value("instrument");
+    $aft = entry("afternoon_ensemble_form");
+    if ($aft) foreach(array(2, 37,35, 36) as $i) $required[] = $aft[$i];
+    $elec = entry("elective_selection_form");
+    if ($elec) foreach(array(8,3,15,18,21) as $i) $required[] = $elec[$i];
+    $instrument_names = instrument_names();
+    $returned = array();
+    foreach ($required as $inst) {
+        if (in_array($inst, $instrument_names) && !in_array($inst, $returned)) $returned[] = $inst;
+    }
+    return $returned;
+}
+
+// Names of instruments for which evaluations have been filled out
+//  Instrument is in field 1 every time.  For now.
+
+// Assumes no duplicates
+function completed_evaluations() {
+    $completed = array();
+    foreach(array("vocal_evaluation_form", "string_evaluation_form", "wind_evaluation_form") as $form_name) {
+        foreach(entries($form_name) as $entry) {
+            $completed[] = $entry[1];
+        }
+    }
+    return $completed;
+}
+
+function incomplete_evaluations() {
+    $required = required_evaluations();  $completed = completed_evaluations();
+    $incomplete = array();
+    foreach($required as $r) if (!in_array($r, $completed)) $incomplete[] = $r;
+    return $incomplete;
+}
+/*****/
+function evaluation_entry($instrument) {
+    foreach(array("vocal_evaluation_form", "string_evaluation_form", "wind_evaluation_form") as $form_name)
+        foreach(entries($form_name) as $entry) if($entry[1] == $instrument) return $entry;
+    return null;
+}
+
+function evaluation_form_link($instrument) {
     $eval_group = evaluation_selection_group($instrument);
-    return site_url("$eval_group-self-evaluation-form") . "/?instrument=$instrument";
+    $user_name = user_name();
+    return site_url("$eval_group-evaluation-form") . "/?username=$user_name&instrument=$instrument";
 }
 
-function self_eval($atts = [], $content=null, $tag='') {
-    $instrument = $atts['instrument'] ? $atts['instrument'] : primary_instrument();
-    $url = self_eval_url_for($instrument);
-    return "<a href=\"$url\">Self Eval for $instrument</a>";
+function evaluation_edit_link($instrument) {
+    $eval_group = evaluation_selection_group($instrument);
+    if ($eval_group == "wind")
+        return eval_edit_link_for($instrument, "wind_evaluation_edit_view");
+    else if ($eval_group == "string") 
+        return eval_edit_link_for($instrument, "string_evaluation_edit_view");
+    else if ($eval_group == "vocal")
+        return eval_edit_link_for($instrument, "vocal_evaluation_edit_view");
+    else throw new Exception("Bad evaluation group $eval_group for $instrument");
 }
-add_shortcode('self_eval', 'self_eval');
+
+function eval_edit_link_for($instrument, $view_name) {
+    $view_id = id_for($view_name);
+    $entry_id = evaluation_entry($instrument)["id"];
+    return do_shortcode("[gv_entry_link action='edit' entry_id=$entry_id view_id=$view_id]" . 
+                            "Edit $instrument Evaluation" . "[/gv_entry_link]");
+}
+
+function evals_to_complete() {
+    $copy = '<ul>';
+    foreach(incomplete_evaluations() as $inst) 
+        $copy .= "<li><a href=\"" . evaluation_form_link($inst) . "\">" . "Complete $inst Evaluation" . "</a></li>";
+    $copy .= "</ul>";
+    return $copy;
+}
+
+function evals_to_edit() {
+    $copy = '<ul>';
+    foreach(completed_evaluations() as $inst) 
+        $copy .= "<li> " . evaluation_edit_link($inst) . "</li>";
+    $copy .= "</ul>";
+    return $copy;
+}
+
+add_shortcode('evals_to_complete', 'evals_to_complete');
+add_shortcode('evals_to_edit', 'evals_to_edit');
