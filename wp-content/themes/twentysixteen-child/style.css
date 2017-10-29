@@ -97,3 +97,5 @@
 
 /*    Remove footer from bottom of table view  (payments and charges) */
 .gv-table-view tfoot{ display:none; }
+
+.elective_selection{ max-height: 25px; }

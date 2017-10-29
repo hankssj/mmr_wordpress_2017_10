@@ -1,25 +1,16 @@
 =========================
 Front end
 
+Need copy on the payment gateway
+All payments are being seen in payment summary
+Registration confirmation email
+Put validation in registration form submit in case user submits second time
+Get rid of (1) in afternoon ensemble
+Make how many years text box smaller, also on string it displaces a line
+But in payment calculation
+Make it so you can't fill out morning ensemble without a registration
+Elective selection format -- elective name needs to be wider
 
-Instrument for assigned ensemble #2 does not appear on edit
-
-
-Defaults and general edit on dropdowns.  Check that edits work on all forms that have a dropdown!
-
-Electives magic
-Self-evals
-Registration for   
-    Faculty
-    Staff
-    Board
-    Major Volunteer
-Move to Bluehost
-======================
-Loose ends
-   Various text fields in afternoon ensemble:  jazz, bring own music
-    Correct typo HORM
-    
 ======================
 Back end
 
@@ -27,11 +18,50 @@ Mailings
 Reports
 Filemaker exports
 
-=======================
-Other
-Transition to Bluehost
-Check in to Git
-
 ========
 payment:  midsummer-buyer@musicalretreat.org   walla2walla2
 credit card 4032038177409327  exp 12/21
+
+Faculty
+No charge for registration or tuition
+No charge if room is off-campus or double room;  charge is $100 if single room is selected
+No charge for meals regardless of what is selected
+Standard wine glass and donation and t-shirt
+Free T-shirt
+
+
+Staff roles
+No charge for registration No charge for tuition
+Lodging:  No charge if room is off-campus or double room;  charge is $100 if single room is selected
+No charge for meals regardless of what is selected
+Free T-shirt
+
+Board role and major volunteer
+$150 charge for registration or tuition
+Everything else the same as regular user, except
+Free T-shirt
+
+charge type -- regular, faculty, staff, bmv
+
+Registration Flat Fee
+    Faculty 0
+    Staff 0
+    BMV 150
+    Regular 200
+    
+Tuition
+    Faculty / Staff / BMV 0
+    Regular 400 for participant
+    
+Lodging
+    Faculty, Staff -- 100 for single room
+    Regular, BMV -- 240/340/0
+    
+Meals
+    Faculty, Staff -- 0 regardless
+    Regular, BMV -- 260/200/0
+
+T-Shirt 20
+    Faculty, Staff, BMV -- 1 free
+    
+Wine glass 20
